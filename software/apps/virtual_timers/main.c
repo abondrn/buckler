@@ -52,11 +52,31 @@ int main(void) {
   nrf_delay_ms(3000);
 
   // Setup some timers and see what happens
-  //virtual_timer_start_repeated(1000000, led0_toggle);
+  //uint32_t id1 = virtual_timer_start_repeated(1000000, led0_toggle);
   //virtual_timer_start_repeated(2000000, led1_toggle);
 
+  // 6.2.7
+  //virtual_timer_start(1000000, led0_toggle);
+  //virtual_timer_start(2000000, led1_toggle);
+  //virtual_timer_start(3000000, led2_toggle);
+  //virtual_timer_start(4000000, led0_toggle);
+  //virtual_timer_start(5000000, led1_toggle);
+  //virtual_timer_start(6000000, led2_toggle);
+
+  // 6.2.8
+  virtual_timer_start_repeated(1000, led0_toggle);
+  virtual_timer_start_repeated(2000, led1_toggle);
+
+  //nrf_delay_ms(8000);
+  //virtual_timer_cancel(id1);
+
   // loop forever
-  while (1) {
+  for (int t=0; 1; t++) {
+  	// 6.2.6
+  	//if (t == 5) {
+  	//	virtual_timer_cancel(id1);
+  	//}
+  	printf("%lu\n", read_timer());
     nrf_delay_ms(1000);
   }
 }

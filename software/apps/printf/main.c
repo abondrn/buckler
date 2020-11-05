@@ -19,6 +19,9 @@
 
 #include "buckler.h"
 
+
+volatile uint32_t watchglobal;
+
 int main(void) {
   ret_code_t error_code = NRF_SUCCESS;
 
@@ -30,7 +33,9 @@ int main(void) {
 
   // loop forever
   uint32_t i = 0;
+  printf("Address of i: %p\n", &i);
   while (1) {
+    watchglobal = i;
     nrf_delay_ms(1000);
     printf("Iteration: %lu\n", i++);
   }

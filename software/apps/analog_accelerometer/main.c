@@ -25,6 +25,14 @@
 #define Y_CHANNEL 1
 #define Z_CHANNEL 2
 
+#define FSR 3.6
+#define LSB (FSR/(1<<12))
+#define Vratio (2.9/3)
+
+#define ADC2V(adc) (adc*LSB)
+#define V2g(v) (v)
+
+
 // callback for SAADC events
 void saadc_callback (nrfx_saadc_evt_t const * p_event) {
   // don't care about adc callbacks
@@ -84,7 +92,8 @@ int main (void) {
     nrf_saadc_value_t z_val = sample_value(Z_CHANNEL);
 
     // display results
-    printf("x: %d\ty: %d\tz:%d\n", x_val, y_val, z_val);
+    printf("x:%d y:%d z:%d\n", x_val, y_val, z_val);
+    printf("x:%.3f y:%.3f z:%.3f\n", x_val*LSB, y_val*LSB, z_val*LSB);
     nrf_delay_ms(250);
   }
 }
