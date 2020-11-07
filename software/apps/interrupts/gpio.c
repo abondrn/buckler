@@ -14,7 +14,7 @@ void gpio_config(uint8_t gpio_num, gpio_direction_t dir) {
     	//*pin_cnf = *pin_cnf & ~2;
 		pin_cnf->INPUT = 0;
 		break;
-	case OUTPUT:_
+	case OUTPUT:
 		GPIO->DIR |= 1 << gpio_num;
 		break;
 	};
