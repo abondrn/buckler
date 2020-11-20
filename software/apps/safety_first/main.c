@@ -22,6 +22,9 @@
 #include "pixy2_spi.h"
 
 
+#define SHOW_STATUS(code, comment) printf(comment " %d\n", code)
+
+
 int main(void) {
   // initialize RTT library
   APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
@@ -41,13 +44,17 @@ int main(void) {
     .bit_order = NRF_DRV_SPI_BIT_ORDER_MSB_FIRST
   };
   APP_ERROR_CHECK(nrf_drv_spi_init(&spi_instance, &spi_config, NULL, NULL));
-
   pixy2_t *p;
-
-  init(&p, &spi_instance);
-  getVersion(p);
+  SHOW_STATUS(init(&p, &spi_instance), "initialize");
   print_version(p->version);
-  printf("FPS: %d", getFPS(p));
-  getResolution(p);
-  printf("frame width=%d height=%d", p->frameWidth, p->frameHeight);
+
+  SHOW_STATUS(changeProg(p, PIXY_PROG_COLOR_CODE), "change program");
+
+  while (1) {
+    SHOW_STATUS(getBlocks(p, false, CCC_SIG_ALL, CCC_MAX_BLOCKS), "blocks");
+    for (int i=0; i < p->numBlocks; i++)
+      print_block(&p->blocks[i]);
+    SHOW_STATUS(getFPS(p), "FPS");
+    nrf_delay_ms(1000);
+  }
 }
