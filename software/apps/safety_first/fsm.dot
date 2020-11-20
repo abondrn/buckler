@@ -1,0 +1,21 @@
+digraph G {
+  start -> AWAITING;
+  AWAITING -> AWAITING [label="monitor"];
+  AWAITING -> SCAN [label="RC / acknowledge"];
+  SCAN -> SCAN [label="circle around"];
+  
+  SCAN -> MOVE [label="spotted / announce"];
+  MOVE -> MOVE [label="PID loop"];
+  MOVE -> AVOID [label="obstacle / announce"];
+  AVOID -> AVOID [label="check alternate angles"];
+  AVOID -> MOVE [label="new trajectory chosen"];
+  MOVE -> REACHED [label="distance <= threshold / announce"];
+  REACHED -> REACHED [label="move behind object"];
+  REACHED -> RETURN [label="behind object / announce, plan trajectory to retrace steps"];
+  RETURN -> RETURN [label="PID loop"]
+  RETURN -> AWAITING [label="back at start / announce"];
+  
+  SCAN -> EXPLORE [label="not spotted"];
+  EXPLORE -> EXPLORE [label="select and move to new location"];
+  EXPLORE -> SCAN [label=""];
+}
