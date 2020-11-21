@@ -138,8 +138,8 @@ typedef struct Pixy2 {
 } pixy2_t;
 
 
-int8_t init(pixy2_t** p, nrf_drv_spi_t const * const spi);
-void close(pixy2_t* p);
+int8_t pixy_init(pixy2_t** p, nrf_drv_spi_t const * const spi);
+void pixy_close(pixy2_t* p);
 
 int8_t getVersion(pixy2_t* p);
 int8_t changeProg(pixy2_t* p, const char *prog);

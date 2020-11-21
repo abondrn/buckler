@@ -25,7 +25,11 @@
 #define SHOW_STATUS(code, comment) printf(comment " %d\n", code)
 
 
-int main(void) {
+pixy_t *pixy;
+pid_t panLoop;
+
+
+void setup() {
   // initialize RTT library
   APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
   NRF_LOG_DEFAULT_BACKENDS_INIT();
@@ -44,17 +48,58 @@ int main(void) {
     .bit_order = NRF_DRV_SPI_BIT_ORDER_MSB_FIRST
   };
   APP_ERROR_CHECK(nrf_drv_spi_init(&spi_instance, &spi_config, NULL, NULL));
-  pixy2_t *p;
-  SHOW_STATUS(init(&p, &spi_instance), "initialize");
-  print_version(p->version);
 
-  SHOW_STATUS(changeProg(p, PIXY_PROG_COLOR_CODE), "change program");
+  // We need to initialize the pixy object 
+  pixy2_t *pixy;
+  SHOW_STATUS(pixy_init(&pixy, &spi_instance), "initialize");
+  print_version(pixy->version);
+
+  // Use color connected components program for the pan tilt to track 
+  SHOW_STATUS(changeProg(pixy, PIXY_PROG_COLOR_CODE), "change program");
+
+  pid_init(&panLoop, 400, 0, 400, true);
+}
+
+
+void loop() {  
+  // get active blocks from Pixy
+  SHOW_STATUS(getBlocks(pixy, false, CCC_SIG_ALL, CCC_MAX_BLOCKS), "blocks");
+  for (int i=0; i < pixy->numBlocks; i++)
+    print_block(&pixy->blocks[i]);
+
+  SHOW_STATUS(getFPS(pixy), "FPS");
+
+  int32_t panOffset;
+  
+  if (pixy->numBlocks) {            
+    // calculate pan and tilt "errors" with respect to first object (blocks[0]), 
+    // which is the biggest object (they are sorted by size).  
+    panOffset = (int32_t)pixy->frameWidth/2 - (int32_t)pixy->blocks[0].m_x;
+  
+    // update loops
+    pid_update(&panLoop, panOffset);
+  
+    // set pan and tilt servos
+    kobukiDriveDirect(panLoop->m_command, -panLoop->m_command);
+   
+#if 0 // for debugging
+    printf("%ld %ld %ld %ld", rotateLoop.m_command, translateLoop.m_command, left, right);
+#endif
+
+  // no object detected, go into reset state
+  } else {
+    reset(&panLoop);
+    kobukiDriveDirect(0, 0);
+  }
+}
+
+
+
+int main(void) {
+  setup();
 
   while (1) {
-    SHOW_STATUS(getBlocks(p, false, CCC_SIG_ALL, CCC_MAX_BLOCKS), "blocks");
-    for (int i=0; i < p->numBlocks; i++)
-      print_block(&p->blocks[i]);
-    SHOW_STATUS(getFPS(p), "FPS");
+    loop();
     nrf_delay_ms(1000);
   }
 }

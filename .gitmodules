@@ -1,3 +1,6 @@
 [submodule "software/nrf52x-base"]
 	path = software/nrf52x-base
 	url = https://github.com/lab11/nrf52x-base.git
+[submodule "software/libraries/debug"]
+	path = software/libraries/debug
+	url = https://github.com/esneider/debug
