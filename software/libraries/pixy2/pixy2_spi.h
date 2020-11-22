@@ -135,30 +135,30 @@ typedef struct Pixy2 {
   //Pixy2Video video;
 
   nrf_drv_spi_t const * spi;
-} pixy2_t;
+} drv_pixy2_spi_t;
 
 
-int8_t pixy_init(pixy2_t** p, nrf_drv_spi_t const * const spi);
-void pixy_close(pixy2_t* p);
+int8_t pixy_init(drv_pixy2_spi_t** p, nrf_drv_spi_t const * const spi);
+void pixy_close(drv_pixy2_spi_t* p);
 
-int8_t getVersion(pixy2_t* p);
-int8_t changeProg(pixy2_t* p, const char *prog);
-int8_t setServos(pixy2_t* p, uint16_t s0, uint16_t s1);
-int8_t setCameraBrightness(pixy2_t* p, uint8_t brightness);
-int8_t setLED(pixy2_t* p, uint8_t r, uint8_t g, uint8_t b);
-int8_t setLamp(pixy2_t* p, uint8_t upper, uint8_t lower);
-int8_t getResolution(pixy2_t* p);
-int8_t getFPS(pixy2_t* p);
+int8_t getVersion(drv_pixy2_spi_t* p);
+int8_t changeProg(drv_pixy2_spi_t* p, const char *prog);
+int8_t setServos(drv_pixy2_spi_t* p, uint16_t s0, uint16_t s1);
+int8_t setCameraBrightness(drv_pixy2_spi_t* p, uint8_t brightness);
+int8_t setLED(drv_pixy2_spi_t* p, uint8_t r, uint8_t g, uint8_t b);
+int8_t setLamp(drv_pixy2_spi_t* p, uint8_t upper, uint8_t lower);
+int8_t getResolution(drv_pixy2_spi_t* p);
+int8_t getFPS(drv_pixy2_spi_t* p);
 
-int8_t getBlocks(pixy2_t *p, bool wait, uint8_t sigmap, uint8_t maxBlocks);
+int8_t getBlocks(drv_pixy2_spi_t *p, bool wait, uint8_t sigmap, uint8_t maxBlocks);
 
 
 // --- serial helper ---
 
 
-int16_t getSync(pixy2_t* p);
-int16_t recvPacket(pixy2_t* p);
-int16_t sendPacket(pixy2_t* p);
+int16_t getSync(drv_pixy2_spi_t* p);
+int16_t recvPacket(drv_pixy2_spi_t* p);
+int16_t sendPacket(drv_pixy2_spi_t* p);
 
 
 #endif

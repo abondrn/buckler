@@ -42,8 +42,8 @@
 #define LOG_INFO(M, ...) printf(WHITE "[INFO]" COLOR_X " (%s:%s:%d) " M "\n", __FILENAME__, __func__, __LINE__, ##__VA_ARGS__) 
 
 
-int8_t init(pixy2_t **pref, nrf_drv_spi_t const * const spi) {
-  pixy2_t *p = malloc(sizeof(struct Pixy2));
+int8_t pixy_init(drv_pixy2_spi_t **pref, nrf_drv_spi_t const * const spi) {
+  drv_pixy2_spi_t *p = malloc(sizeof(struct Pixy2));
   *pref = p;
 
   // allocate buffer space for send/receive
@@ -73,12 +73,12 @@ int8_t init(pixy2_t **pref, nrf_drv_spi_t const * const spi) {
 }
 
 
-void close(pixy2_t *p) {
+void pixy_close(drv_pixy2_spi_t *p) {
   free(p->m_buf);
 }
 
 
-int16_t getSync(pixy2_t *p) {
+int16_t getSync(drv_pixy2_spi_t *p) {
   TRACE();
   uint8_t i, j, c, cprev;
   int16_t res;
@@ -118,7 +118,7 @@ int16_t getSync(pixy2_t *p) {
 }
 
 
-int16_t recvPacket(pixy2_t *p) {
+int16_t recvPacket(drv_pixy2_spi_t *p) {
   TRACE();
   uint16_t csCalc, csSerial;
   int16_t res;
@@ -170,7 +170,7 @@ int16_t recvPacket(pixy2_t *p) {
 }
 
 
-int16_t sendPacket(pixy2_t *p) {
+int16_t sendPacket(drv_pixy2_spi_t *p) {
   TRACE();  
   // write header info at beginnig of buffer
   p->m_buf[0] = PIXY_NO_CHECKSUM_SYNC&0xff;
@@ -183,7 +183,7 @@ int16_t sendPacket(pixy2_t *p) {
 }
 
 
-int8_t changeProg(pixy2_t *p, const char *prog) {
+int8_t changeProg(drv_pixy2_spi_t *p, const char *prog) {
   TRACE();
   int32_t res;
   
@@ -204,7 +204,7 @@ int8_t changeProg(pixy2_t *p, const char *prog) {
 }
 
 
-int8_t getVersion(pixy2_t *p) {
+int8_t getVersion(drv_pixy2_spi_t *p) {
   TRACE();
   int32_t res;
 
@@ -223,7 +223,7 @@ int8_t getVersion(pixy2_t *p) {
 }
 
 
-int8_t getResolution(pixy2_t *p) {
+int8_t getResolution(drv_pixy2_spi_t *p) {
   TRACE();
   int32_t res;
 
@@ -242,7 +242,7 @@ int8_t getResolution(pixy2_t *p) {
 }
     
 
-int8_t setCameraBrightness(pixy2_t *p, uint8_t brightness) {
+int8_t setCameraBrightness(drv_pixy2_spi_t *p, uint8_t brightness) {
   uint32_t res;
   
   p->m_bufPayload[0] = brightness;
@@ -258,7 +258,7 @@ int8_t setCameraBrightness(pixy2_t *p, uint8_t brightness) {
 }
 
 
-int8_t setServos(pixy2_t *p, uint16_t s0, uint16_t s1) {
+int8_t setServos(drv_pixy2_spi_t *p, uint16_t s0, uint16_t s1) {
   uint32_t res;
   
   *(int16_t *)(p->m_bufPayload + 0) = s0;
@@ -276,7 +276,7 @@ int8_t setServos(pixy2_t *p, uint16_t s0, uint16_t s1) {
 }
 
 
-int8_t setLED(pixy2_t *p, uint8_t r, uint8_t g, uint8_t b) {
+int8_t setLED(drv_pixy2_spi_t *p, uint8_t r, uint8_t g, uint8_t b) {
   uint32_t res;
   
   p->m_bufPayload[0] = r;
@@ -294,7 +294,7 @@ int8_t setLED(pixy2_t *p, uint8_t r, uint8_t g, uint8_t b) {
     return PIXY_RESULT_ERROR;
 }
 
-int8_t setLamp(pixy2_t *p, uint8_t upper, uint8_t lower) {
+int8_t setLamp(drv_pixy2_spi_t *p, uint8_t upper, uint8_t lower) {
   uint32_t res;
   
   p->m_bufPayload[0] = upper;
@@ -311,7 +311,7 @@ int8_t setLamp(pixy2_t *p, uint8_t upper, uint8_t lower) {
       return PIXY_RESULT_ERROR;
 }
 
-int8_t getFPS(pixy2_t *p) {
+int8_t getFPS(drv_pixy2_spi_t *p) {
   TRACE();
   uint32_t res;
   
@@ -386,7 +386,7 @@ void print_block(block_t *b) {
 }
 
 
-int8_t getBlocks(pixy2_t *p, bool wait, uint8_t sigmap, uint8_t maxBlocks) {
+int8_t getBlocks(drv_pixy2_spi_t *p, bool wait, uint8_t sigmap, uint8_t maxBlocks) {
   TRACE();
 
   while(1) {
